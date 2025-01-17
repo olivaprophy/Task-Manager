@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 tasks = []
+#создание файла для загрузки
 def load_tasks_from_txt():
     try:
         with open('to-do list.txt', 'r', encoding='utf-8') as file:
@@ -15,16 +16,15 @@ def load_tasks_from_txt():
                 })
     except FileNotFoundError:
         print("Файл to-do list.txt не найден.")
-
+#сохранение задач в файл
 def save_tasks_to_txt():
     with open('to-do list.txt', 'w', encoding='utf-8') as file:
         for task in tasks:
             file.write(f"{task['description']}|{task['deadline'].strftime('%d-%m-%Y')}|{task['priority']}|{task['completed']}\n")
     print('Создали файл to-do list.txt для вашего удобства!')
-
+#добавление задачи
 def add_task():
     description = input("Введите описание задачи: ")
-
     while True:
         try:
             deadline = input("Введите дедлайн (ДД-ММ-ГГГГ): ")
@@ -46,7 +46,7 @@ def add_task():
         'completed': False
     })
     print("Задача добавлена.")
-
+#список (не)выполенных задач задач
 def list_tasks():
     if not tasks:
         print("Список задач пуст.")
@@ -58,7 +58,7 @@ def list_tasks():
         overdue_message = " Упс, просрочено..." if not task['completed'] and datetime.now() > task['deadline'] else ""
 
         print(f"{i}. {status}. {task['deadline']}. {task['priority']}. {completion_status}. {overdue_message}")
-
+#завершить задачу
 def complete_task():
     list_tasks()
 
@@ -74,7 +74,7 @@ def complete_task():
             print("Неверный номер задачи.")
     except ValueError:
         print("Введите номер задачи.")
-
+#список просрочки
 def show_overdue():
     overdue_tasks = [task for task in tasks if datetime.now() > task['deadline'] and not task['completed']]
 
@@ -86,7 +86,7 @@ def show_overdue():
     for task in overdue_tasks:
         overdue_days = (datetime.now() - task['deadline']).days
         print(f"{task['description']} - {task['deadline'].strftime('%d-%m-%Y')} - Просрочено на {overdue_days} дней")
-
+#сортировка по приоритету, дедлайну
 def sort_tasks_by_priority():
     tasks.sort(key=lambda x: {'в': 0, 'с': 1, 'н': 2}[x['priority']])
     print("Задачи отсортированы по приоритету.")
@@ -94,9 +94,8 @@ def sort_tasks_by_priority():
 def sort_tasks_by_deadline():
     tasks.sort(key=lambda x: x['deadline'])
     print("Задачи отсортированы по дедлайну.")
-
+#граф.визуализация по сделанным задачам
 def plot_task_completion():
-    """Строит график процента выполненных задач с использованием Plotly."""
     completed_tasks = sum(1 for task in tasks if task['completed'])
     total_tasks = len(tasks)
 
@@ -111,11 +110,10 @@ def plot_task_completion():
     sizes = [completed_percentage, not_completed_percentage]
 
     fig = go.Figure(data=[go.Pie(labels=labels, values=sizes, hole=0.3,
-                                 marker=dict(colors=['#5AA03C', '#F03A90']))])
-
+                                 marker=dict(colors=['#87CEFA', '#9370db']))])
     fig.update_layout(title="Процент выполненных задач", showlegend=True)
     fig.show()
-
+#функция для меню
 def show_menu():
     print("\nМеню:")
     print("1. Добавить задачу")
@@ -128,7 +126,7 @@ def show_menu():
     print("8. Завершить программу и выйти")
 load_tasks_from_txt()
 
-# Основной цикл программы
+#отображение меню после каждого действия
 while True:
     show_menu()
 
